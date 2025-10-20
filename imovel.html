@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Detalhes do Imóvel — SuaMarca</title>
+
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="./estilos/styles.css?v=10">
+  <meta name="color-scheme" content="light">
+</head>
+<body>
+  <header class="site-header">
+    <nav class="container nav-bar">
+      <a class="brand" href="imoveis.html">
+        <span class="brand-mark"></span> Sua<span class="brand-accent">Marca</span>
+      </a>
+      <ul class="menu">
+        <li><a href="imoveis.html#lista">Voltar</a></li>
+        <li><a class="btn btn-sm" id="btn-contato-topo" href="#mensagens">Prosseguir</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main class="details">
+    <section class="container details-grid">
+      <div class="gallery-card">
+        <div class="gallery-main">
+          <button class="g-nav prev" aria-label="Anterior">←</button>
+          <img id="g-main" alt="Foto do imóvel">
+          <button class="g-nav next" aria-label="Próxima">→</button>
+        </div>
+        <div class="thumbs" id="g-thumbs"></div>
+      </div>
+
+      <aside class="summary-card">
+        <h1 id="d-titulo">Título</h1>
+        <p class="d-loc" id="d-loc">Cidade · Bairro</p>
+        <div class="d-price" id="d-preco">R$ 0/mês</div>
+
+        <div class="d-specs">
+          <div class="d-spec"><span>🛏️</span><strong id="d-quartos">0</strong> Quartos</div>
+          <div class="d-spec"><span>🛁</span><strong id="d-banheiros">0</strong> Banheiros</div>
+          <div class="d-spec"><span>🚗</span><strong id="d-vagas">0</strong> Vagas</div>
+          <div class="d-spec"><span>🏠</span><strong id="d-area">0</strong> m²</div>
+        </div>
+
+        <div class="chips" id="d-chips"></div>
+
+        <button class="btn btn-big" id="btn-prosseguir">Prosseguir com aluguel</button>
+
+        <div class="map-card">
+          <h3>Localização</h3>
+          <p id="d-endereco"></p>
+          <div class="map-wrap">
+            <iframe id="d-mapa" loading="lazy" referrerpolicy="no-referrer-when-downgrade" allowfullscreen></iframe>
+          </div>
+        </div>
+      </aside>
+    </section>
+
+    <section class="container about-card">
+      <h2>Sobre o imóvel</h2>
+      <p id="d-desc">Descrição do imóvel.</p>
+    </section>
+
+    <!-- Modal de Mensagens -->
+    <dialog id="dlg" class="message-dialog">
+      <form method="dialog" class="dialog-frame">
+        <header class="dialog-header">
+          <h3>Conversar sobre o aluguel</h3>
+          <button class="dialog-close" aria-label="Fechar">×</button>
+        </header>
+
+        <section class="dialog-body">
+          <div class="msg-preview" id="msg-preview">
+            <!-- bolhas de conversa (visual) -->
+          </div>
+
+          <div class="msg-form">
+            <label>
+              <span>Seu nome</span>
+              <input type="text" id="c-nome" placeholder="Seu nome" required>
+            </label>
+            <label>
+              <span>Seu e-mail</span>
+              <input type="email" id="c-email" placeholder="voce@exemplo.com" required>
+            </label>
+            <label class="msg-col">
+              <span>Mensagem</span>
+              <textarea id="c-msg" rows="3" placeholder="Olá! Tenho interesse neste imóvel. Podemos falar sobre valores e contrato?"></textarea>
+            </label>
+          </div>
+        </section>
+
+        <footer class="dialog-footer">
+          <button class="btn btn-ghost" value="cancel">Cancelar</button>
+          <button class="btn" id="btn-enviar" value="default">Enviar mensagem</button>
+        </footer>
+      </form>
+    </dialog>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-grid">
+      <p>© 2025 SuaMarca Imóveis</p>
+      <nav class="footer-nav">
+        <a href="#">Termos</a>
+        <a href="#">Privacidade</a>
+        <a href="mailto:contato@exemplo.com">Contato</a>
+      </nav>
+    </div>
+  </footer>
+
+  <script>
+    /* ===== Dataset (mesmo da listagem) ===== */
+    const IMOVEIS = [
+      {
+        id: "apto-varanda-floripa",
+        titulo: "Apto 2Q com varanda",
+        cidade: "Florianópolis",
+        bairro: "Centro",
+        preco: 3200,
+        quartos: 2, banheiros: 2, vagas: 1, area: 78,
+        mob: true, pet: true,
+        lat: -27.5954, lng: -48.5480,
+        endereco: "Rua Exemplo, 123",
+        galeria: ["fotos/casa-01.jpg","fotos/casa-01b.jpg","fotos/casa-01c.jpg"],
+        resumo: "Apartamento moderno, iluminado e mobiliado com varanda."
+      },
+      {
+        id: "cobertura-bc-vista",
+        titulo: "Cobertura 3Q com vista",
+        cidade: "Balneário Camboriú",
+        bairro: "Pioneiros",
+        preco: 4500,
+        quartos: 3, banheiros: 3, vagas: 2, area: 120,
+        mob: true, pet: false,
+        lat: -26.9909, lng: -48.6346,
+        endereco: "Av. Atlântica, 456",
+        galeria: ["fotos/casa-02.jpg","fotos/casa-02b.jpg"],
+        resumo: "Cobertura com vista incrível, perto da praia."
+      },
+      {
+        id: "casa-quintal-sombrio",
+        titulo: "Casa térrea c/ quintal",
+        cidade: "Sombrio",
+        bairro: "Parque",
+        preco: 1800,
+        quartos: 2, banheiros: 1, vagas: 1, area: 68,
+        mob: false, pet: true,
+        lat: -29.1131, lng: -49.6356,
+        endereco: "Rua das Flores, 89",
+        galeria: ["fotos/casa-03.jpg","fotos/casa-03b.jpg","fotos/casa-03c.jpg"],
+        resumo: "Casa com quintal, perfeita para pets."
+      },
+      {
+        id: "studio-moinhos-poa",
+        titulo: "Studio compacto",
+        cidade: "Porto Alegre",
+        bairro: "Moinhos",
+        preco: 2500,
+        quartos: 1, banheiros: 1, vagas: 0, area: 40,
+        mob: true, pet: false,
+        lat: -30.0277, lng: -51.2287,
+        endereco: "Rua Charmosa, 22",
+        galeria: ["fotos/casa-04.jpg","fotos/casa-04b.jpg"],
+        resumo: "Studio mobiliado, pronto para morar."
+      }
+    ];
+
+    /* ===== Util ===== */
+    const qs = (s, r=document) => r.querySelector(s);
+    const qsa = (s, r=document) => [...r.querySelectorAll(s)];
+    const params = new URLSearchParams(location.search);
+    const id = params.get('id');
+
+    const PLACEHOLDER = 'data:image/svg+xml;utf8,' + encodeURIComponent(
+      `<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="800">
+         <defs><linearGradient id="g" x1="0" x2="1">
+           <stop offset="0" stop-color="#2563eb"/><stop offset="1" stop-color="#ff7a18"/>
+         </linearGradient></defs>
+         <rect width="100%" height="100%" fill="url(#g)"/>
+         <text x="50%" y="50%" text-anchor="middle" font-size="48" font-family="sans-serif" fill="white" opacity=".85">FOTO</text>
+       </svg>`
+    );
+
+    function notFound(){
+      qs('.details').innerHTML = `
+        <section class="container about-card" style="text-align:center">
+          <h2>Imóvel não encontrado</h2>
+          <p>Verifique o link ou volte para a <a href="imoveis.html">página de imóveis</a>.</p>
+        </section>`;
+    }
+
+    const item = IMOVEIS.find(x => x.id === id);
+    if (!item) { notFound(); }
+
+    /* ===== Preencher dados ===== */
+    if (item){
+      qs('#d-titulo').textContent = item.titulo;
+      qs('#d-loc').textContent = `${item.cidade} · ${item.bairro}`;
+      qs('#d-preco').textContent = `R$ ${item.preco.toLocaleString('pt-BR')}/mês`;
+      qs('#d-quartos').textContent = item.quartos;
+      qs('#d-banheiros').textContent = item.banheiros;
+      qs('#d-vagas').textContent = item.vagas;
+      qs('#d-area').textContent = item.area;
+      qs('#d-endereco').textContent = `${item.endereco} — ${item.cidade}`;
+      qs('#d-desc').textContent = item.resumo;
+
+      const chips = [];
+      if (item.mob) chips.push('<span class="chip chip-blue">Mobiliado</span>');
+      if (item.pet) chips.push('<span class="chip chip-orange">Pet</span>');
+      qs('#d-chips').innerHTML = chips.join('');
+
+      // mapa embed (sem API key)
+      const mapSrc = `https://www.google.com/maps?q=${item.lat},${item.lng}&z=15&output=embed`;
+      qs('#d-mapa').src = mapSrc;
+
+      // galeria
+      const fotos = item.galeria?.length ? item.galeria : [PLACEHOLDER];
+      const main = qs('#g-main');
+      let idx = 0;
+      function show(i){
+        idx = (i + fotos.length) % fotos.length;
+        main.src = fotos[idx] || PLACEHOLDER;
+        main.alt = `${item.titulo} — foto ${idx+1}`;
+        qsa('.thumbs img').forEach((t, k)=> t.classList.toggle('active', k===idx));
+      }
+      qs('.thumbs').innerHTML = fotos.map((f,i)=>`<img src="${f}" alt="thumb ${i+1}" onerror="this.src='${PLACEHOLDER}'" ${i===0?'class="active"':''}>`).join('');
+      show(0);
+
+      qs('.g-nav.prev').addEventListener('click', ()=> show(idx-1));
+      qs('.g-nav.next').addEventListener('click', ()=> show(idx+1));
+      qs('.thumbs').addEventListener('click', (e)=>{
+        const i = qsa('.thumbs img').indexOf?.(e.target) ?? qsa('.thumbs img').findIndex(x=>x===e.target);
+        if (i>=0) show(i);
+      });
+
+      // “Prosseguir” abre modal de mensagens
+      const dlg = qs('#dlg');
+      function openDialog(){
+        if (typeof dlg.showModal === 'function') dlg.showModal(); else dlg.classList.add('open-fallback');
+        // bolhas iniciais
+        const box = qs('#msg-preview');
+        box.innerHTML = `
+          <div class="bubble owner">Olá! Esse imóvel (${item.titulo}) está disponível. Posso ajudar?</div>
+          <div class="bubble you">Olá! Tenho interesse. Podemos conversar sobre valores e contrato?</div>
+        `;
+        qs('#c-msg').value = `Tenho interesse no imóvel "${item.titulo}" (${item.cidade} · ${item.bairro}). Podemos falar sobre valores e contrato?`;
+      }
+      qs('#btn-prosseguir').addEventListener('click', openDialog);
+      qs('#btn-contato-topo').addEventListener('click', (e)=>{ e.preventDefault(); openDialog(); });
+
+      qs('.dialog-close').addEventListener('click', ()=> dlg.close?.());
+
+      // "Enviar" (visual)
+      qs('#btn-enviar').addEventListener('click', (e)=>{
+        const nome = qs('#c-nome').value.trim();
+        const email = qs('#c-email').value.trim();
+        const msg = qs('#c-msg').value.trim();
+        if (!nome || !email || !msg) return; // simples
+        const box = qs('#msg-preview');
+        box.innerHTML += `<div class="bubble you">${msg}</div>
+                          <div class="bubble owner">Obrigado, ${nome}! Vamos retornar em breve no seu e-mail.</div>`;
+        // fecha após efeito visual
+        setTimeout(()=> dlg.close?.(), 900);
+      });
+    }
+  </script>
+</body>
+</html>
